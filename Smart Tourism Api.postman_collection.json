@@ -1,0 +1,194 @@
+{
+	"info": {
+		"_postman_id": "513a84cc-48cf-4a7e-8fb7-4f638679b6e8",
+		"name": "Smart Tourism Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "41306678"
+	},
+	"item": [
+		{
+			"name": "GiveAllCountries",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Country\": \"TestLand\",\r\n  \"Quality of Life\": 1234,\r\n  \"Adventure\": 12,\r\n  \"Heritage\": 32,\r\n  \"Cost of Living Index\": 40.9,\r\n  \"Restaurant Price Index\": 50\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/countries",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"countries"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Retrieve all countries"
+			},
+			"response": []
+		},
+		{
+			"name": "FilterCountry",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/countries/filter?criterion=Cost of Living Index&type=lowest&limit=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"countries",
+						"filter"
+					],
+					"query": [
+						{
+							"key": "criterion",
+							"value": "Cost of Living Index"
+						},
+						{
+							"key": "type",
+							"value": "lowest"
+						},
+						{
+							"key": "limit",
+							"value": "2"
+						}
+					]
+				},
+				"description": "Filter Countries"
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteCountry",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/countries/67e48b32250a9062f13c13fe",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"countries",
+						"67e48b32250a9062f13c13fe"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Delete Country"
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateCountry",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\r\n    \"Cost of Living Index\": 300\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/countries/67e59fa8b3795ab72ab2e579",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"countries",
+						"67e59fa8b3795ab72ab2e579"
+					],
+					"query": [
+						{
+							"key": "Cost of Living Index",
+							"value": "300",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddCountry",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Country\": \"TestCountry\",\r\n  \"Quality of Life\": 25,\r\n  \"Adventure\": 7,\r\n  \"Heritage\": 5,\r\n  \"Cost of Living Index\": 48.0,\r\n  \"Restaurant Price Index\": 47.0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:5000/api/countries/"
+			},
+			"response": []
+		}
+	]
+}

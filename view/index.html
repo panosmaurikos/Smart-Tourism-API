@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Tourism Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Smart Tourism Dashboard</h1>
+        
+        <!-- Form to add a new country -->
+        <div class="form-section">
+            <h2>Add New Country</h2>
+            <form id="addForm">
+                <input type="text" name="Country" placeholder="Country Name" required>
+                <input type="number" name="Quality_of_Life" placeholder="Quality of Life (Lower = Better)">
+                <input type="number" name="Adventure" placeholder="Adventure (Lower = Better)">
+                <input type="number" name="Heritage" placeholder="Heritage (Lower = Better)">
+                <input type="number" step="0.1" name="Cost_of_Living_Index" placeholder="Cost of Living Index">
+                <input type="number" step="0.1" name="Restaurant_Price_Index" placeholder="Restaurant Price Index">
+                <button type="submit">Add Country</button>
+            </form>
+        </div>
+
+        <!-- Filter Countries -->
+        <div class="filter-section">
+            <h2>Filter Countries</h2>
+            <form id="filterForm">
+                <select id="criterion" required>
+                    <option value="">-- Select Criterion --</option>
+                    <option value="Quality of Life">Quality of Life</option>
+                    <option value="Adventure">Adventure</option>
+                    <option value="Heritage">Heritage</option>
+                    <option value="Cost of Living Index">Cost of Living</option>
+                    <option value="Restaurant Price Index">Restaurant Price</option>
+                </select>
+                <select id="type" required>
+                    <option value="lowest">Lowest First</option>
+                    <option value="highest">Highest First</option>
+                </select>
+                <input type="number" id="limit" placeholder="Limit (optional)">
+                <button type="submit">Apply Filter</button>
+                <button type="button" id="resetFilter">Reset</button>
+            </form>
+        </div>
+
+        <!-- Display list of the countries -->
+        <div class="countries-list">
+            <h2>Countries List</h2>
+            <table id="countriesTable">
+                <thead>
+                    <tr>
+                        <th>Country</th>
+                        <th>Quality of Life</th>
+                        <th>Adventure</th>
+                        <th>Heritage</th>
+                        <th>Cost of Living</th>
+                        <th>Restaurant Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="countriesBody">
+                
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Edit countries properties -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Country</h2>
+            <form id="editForm">
+                <input type="text" id="editCountry" name="editCountry" placeholder="Country" required>
+                <input type="number" id="editQuality" name="editQuality" placeholder="Quality of Life">
+                <input type="number" id="editAdventure" name="editAdventure" placeholder="Adventure">
+                <input type="number" id="editHeritage" name="editHeritage" placeholder="Heritage">
+                <input type="number" step="0.1" id="editCost" name="editCost" placeholder="Cost of Living Index">
+                <input type="number" step="0.1" id="editRestaurant" name="editRestaurant" placeholder="Restaurant Price Index">
+                <button type="button" id="saveEdit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script> 
+</html>
