@@ -1,0 +1,27 @@
+name: DevSecOps Orchestrator
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  trufflehog:
+    uses: ./.github/workflows/trufflehog.yml
+  # semgrep:
+  #   uses: ./.github/workflows/semgrep.yml
+
+  # snyk:
+  #   uses: ./.github/workflows/snyk.yml
+
+  # sonarqube:
+  #   uses: ./.github/workflows/sonarqube.yml
+
+  # zap:
+  #   uses: ./.github/workflows/zap.yml
+
+  # sqlmap:
+  #   uses: ./.github/workflows/sqlmap.yml
+
+  # nmap:
+  #   uses: ./.github/workflows/nmap.yml
