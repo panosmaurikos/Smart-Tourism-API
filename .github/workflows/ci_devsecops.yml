@@ -14,13 +14,15 @@ permissions:
 jobs:
   trufflehog:
     uses: ./.github/workflows/trufflehog.yml
+    
+  snyk:
+    uses: ./.github/workflows/snyk.yml
+
   # semgrep:
   #   uses: ./.github/workflows/semgrep.yml
 
-  # snyk:
-  #   uses: ./.github/workflows/snyk.yml
-
   # sonarqube:
+  #   needs: trufflehog
   #   uses: ./.github/workflows/sonarqube.yml
 
   # zap:
