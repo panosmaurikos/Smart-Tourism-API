@@ -2,8 +2,7 @@ name: Nmap Security Scan
 
 on:
   release:
-    types: [published]  
-  # workflow_dispatch:  
+    types: [published]
 
 permissions:
   contents: read
@@ -13,17 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install docker-compose
-        run: |
-            sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-            sudo chmod +x /usr/local/bin/docker-compose
+
       - name: Build and start containers
-        run: docker-compose up -d --build
+        run: docker compose up -d --build
 
       - name: Wait for app to be ready
         run: |
           timeout 60s bash -c 'until docker ps --filter "health=healthy" --format "{{.Names}}" | grep -q .; do sleep 2; done'
-          
+
           CONTAINER_NAME=$(docker ps --format "{{.Names}}" | head -1)
           if [ -n "$CONTAINER_NAME" ]; then
             docker exec $CONTAINER_NAME bash -c '
@@ -51,8 +47,8 @@ jobs:
             exit 1
           fi
 
-      - name: Install Nmap
-        run: sudo apt-get update && sudo apt-get install -y nmap
+      - name: Install Nmap and jq
+        run: sudo apt-get update && sudo apt-get install -y nmap jq
 
       - name: Run Nmap Scan with Vulners
         run: |
@@ -60,11 +56,12 @@ jobs:
           nmap -sV --script vulners -p 5000 $CONTAINER_IP -oX scans/nmapvuln.xml
           
           # Convert XML to JSON
-          sudo apt-get install -y jq
-          if command -v xq &> /dev/null || pip install yq; then
+          if command -v xq &> /dev/null; then
             xq . scans/nmapvuln.xml > scans/nmapvuln.json
+          elif command -v yq &> /dev/null; then
+            yq eval -o=json scans/nmapvuln.xml > scans/nmapvuln.json
           else
-            echo "xq not available, skipping JSON conversion"
+            echo "xq/yq not available, skipping JSON conversion"
           fi
 
       - name: Upload scan results
@@ -75,4 +72,4 @@ jobs:
 
       - name: Stop containers
         if: always()
-        run: docker-compose down
+        run: docker compose down
