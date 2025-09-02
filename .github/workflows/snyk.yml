@@ -14,22 +14,26 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Snyk test (dependencies)
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/project \
             -w /project \
-            -e SNYK_TOKEN=${{ secrets.SNYK_TOKEN }} \
+            -e SNYK_TOKEN=$SNYK_TOKEN \
             snyk/snyk:docker snyk test --sarif-file-output=snyk-deps.sarif
 
       - name: Run Snyk code test (SAST)
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/project \
             -w /project \
-            -e SNYK_TOKEN=${{ secrets.SNYK_TOKEN }} \
+            -e SNYK_TOKEN=$SNYK_TOKEN \
             snyk/snyk:docker snyk code test --sarif-file-output=snyk-code.sarif
 
-      - name: Upload SARIF results
+      - name: Upload SARIF results (dependencies)
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk-deps.sarif
@@ -49,10 +53,12 @@ jobs:
         run: docker build -t smart-tourism-app .
 
       - name: Run Snyk container test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            -e SNYK_TOKEN=${{ secrets.SNYK_TOKEN }} \
+            -e SNYK_TOKEN=$SNYK_TOKEN \
             snyk/snyk:docker snyk container test smart-tourism-app --file=Dockerfile --sarif-file-output=snyk-container.sarif
 
       - name: Upload SARIF results (container)
