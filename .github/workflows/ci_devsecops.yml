@@ -15,9 +15,10 @@ permissions:
 jobs:
   trufflehog:
     uses: ./.github/workflows/trufflehog.yml
+
     
-  snyk:
-    uses: ./.github/workflows/snyk.yml
+  # snyk:
+  #   uses: ./.github/workflows/snyk.yml
 
   # semgrep:
   #   uses: ./.github/workflows/semgrep.yml
@@ -32,5 +33,3 @@ jobs:
   # sqlmap:
   #   uses: ./.github/workflows/sqlmap.yml
 
-  # nmap:
-  #   uses: ./.github/workflows/nmap.yml

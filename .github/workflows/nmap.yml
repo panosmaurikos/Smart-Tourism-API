@@ -1,0 +1,75 @@
+name: Nmap Security Scan
+
+on:
+  release:
+    types: [published]  
+  # workflow_dispatch:  
+
+permissions:
+  contents: read
+
+jobs:
+  nmap-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and start containers
+        run: docker-compose up -d --build
+
+      - name: Wait for app to be ready
+        run: |
+          timeout 60s bash -c 'until docker ps --filter "health=healthy" --format "{{.Names}}" | grep -q .; do sleep 2; done'
+          
+          CONTAINER_NAME=$(docker ps --format "{{.Names}}" | head -1)
+          if [ -n "$CONTAINER_NAME" ]; then
+            docker exec $CONTAINER_NAME bash -c '
+              for i in {1..30}; do
+                if curl -f http://localhost:5000/; then
+                  echo "App is ready!" && exit 0
+                fi
+                sleep 2
+              done
+              echo "App did not start in time" && exit 1
+            '
+          else
+            echo "No containers found!" && exit 1
+          fi
+
+      - name: Get container IP
+        run: |
+          CONTAINER_ID=$(docker ps -q | head -1)
+          if [ -n "$CONTAINER_ID" ]; then
+            CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER_ID)
+            echo "CONTAINER_IP=$CONTAINER_IP" >> $GITHUB_ENV
+            echo "Container IP: $CONTAINER_IP"
+          else
+            echo "ERROR: No running containers found!"
+            exit 1
+          fi
+
+      - name: Install Nmap
+        run: sudo apt-get update && sudo apt-get install -y nmap
+
+      - name: Run Nmap Scan with Vulners
+        run: |
+          mkdir -p scans
+          nmap -sV --script vulners -p 5000 $CONTAINER_IP -oX scans/nmapvuln.xml
+          
+          # Convert XML to JSON
+          sudo apt-get install -y jq
+          if command -v xq &> /dev/null || pip install yq; then
+            xq . scans/nmapvuln.xml > scans/nmapvuln.json
+          else
+            echo "xq not available, skipping JSON conversion"
+          fi
+
+      - name: Upload scan results
+        uses: actions/upload-artifact@v4
+        with:
+          name: nmap-scan-results
+          path: scans/
+
+      - name: Stop containers
+        if: always()
+        run: docker-compose down
