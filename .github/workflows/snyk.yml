@@ -12,7 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+    
 
+      - name: Debug SNYK_TOKEN
+        env:
+            SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+            if [ -z "$SNYK_TOKEN" ]; then
+            echo "❌ SNYK_TOKEN is empty"
+            else
+            echo "✅ SNYK_TOKEN is set"
+            fi
       - name: Run Snyk test (dependencies)
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
