@@ -17,23 +17,29 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Install docker-compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
       - name: Start Docker Compose services
         run: |
-          docker-compose up -d
-          sleep 30  # Περίμενε λίγο για να ξεκινήσουν τα containers (προσαρμοσμένο ανάλογα με την app σου)
+          docker-compose up -d --build
+          sleep 30  # Wait for services to start (adjust as needed)
 
       - name: Scan with Nmap
-        uses: thereisnotime/action-nmap@v1  # Χρησιμοποίησε stable version tag
+        uses: thereisnotime/action-nmap@v1
         with:
-          target: "localhost"  # Σκανάρει το local app service
-          additional_args: "-oA report -p 5000 -sV -sC -A -T4 -v"  # Παράδειγμα args: Σκανάρει port 5000, service versions, scripts για vulns, aggressive scan
+          target: "localhost"  # Scans the local app service
+          additional_args: "-oA report -p 5000 -sV -sC -A -T4 -v"  # Scans port 5000, services, scripts, aggressive mode
 
       - name: Upload Nmap report as artifact
         uses: actions/upload-artifact@v4
         with:
           name: nmap-report
-          path: report.*  # XML, normal, grepable reports από Nmap
+          path: report.*  # Uploads Nmap XML, normal, and grepable reports
 
       - name: Stop Docker Compose services
-        if: always()  # Πάντα stop, ακόμα και αν fail-άρει
+        if: always()  # Always run, even if previous steps fail
         run: docker-compose down
