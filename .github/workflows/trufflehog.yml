@@ -24,7 +24,7 @@ jobs:
         with:
           base: ${{ github.event.pull_request && github.event.pull_request.base.sha || github.event.before }}
           head: ${{ github.event.pull_request && github.event.pull_request.head.sha || github.sha }}
-          extra_args: --results=verified
+          #extra_args: --results=verified
 
       - name: Scan Results Status
         if: steps.trufflehog.outcome == 'failure'
