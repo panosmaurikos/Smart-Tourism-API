@@ -15,26 +15,40 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Start stack with Docker Compose
+      - name: Install docker-compose
         run: |
-          docker compose -f docker-compose.yml up -d --build
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Start stack with docker-compose
+        run: |
+          docker-compose -f docker-compose.yml up -d --build
 
       - name: Wait for services to start
         run: |
-          echo "Waiting for app to be ready..."
+          echo "⏳ Waiting for app to be ready..."
           sleep 30
           docker ps
 
-      - name: Check logs (debugging)
+      - name: Check app logs (debugging)
         run: docker logs smart-tourism-app || true
 
       - name: Test app with curl
         run: |
           curl --retry 10 --retry-delay 5 --fail http://localhost:5000 || (docker logs smart-tourism-app && exit 1)
 
+      - name: Scan with Nmap
+        uses: thereisnotime/action-nmap@v1
+        with:
+          target: "localhost"
+          additional_args: "-oA report -p 5000 -sV -sC -A -T4 -v"
+
+      - name: Upload Nmap report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nmap-report
+          path: report.*
+
       - name: Stop stack
         if: always()
-        run: docker compose -f docker-compose.yml down
+        run: docker-compose -f docker-compose.yml down
