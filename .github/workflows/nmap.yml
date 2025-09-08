@@ -8,8 +8,9 @@ permissions:
   contents: read
 
 jobs:
-  build-and-scan:
+  build-and-test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -17,27 +18,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Install Docker Compose CLI plugin
+      - name: Start stack with Docker Compose
         run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose-plugin
+          docker compose -f docker-compose.yml up -d --build
 
-      - name: Run Docker Compose
-        run: docker compose -f ./docker-compose.yml up -d --build
-
-      - name: Verify services are running
+      - name: Wait for services to start
         run: |
-          docker ps  # Show running containers for debugging
-          sleep 30  # Wait for services to stabilize (adjust as needed)
+          echo "Waiting for app to be ready..."
+          sleep 30
+          docker ps
 
-      - name: Scan with Nmap
-        uses: thereisnotime/action-nmap@v1
-        with:
-          target: "localhost"  # Scans the local app service
-          additional_args: "-oA report -p 5000 -sV -sC -A -T4 -v"  # Scans port 5000, services, scripts, aggressive mode
+      - name: Check logs (debugging)
+        run: docker logs smart-tourism-app || true
 
-      - name: Upload Nmap report as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: nmap-report
-          path: report.*  # Uploads Nmap XML, normal, and grepable reports
+      - name: Test app with curl
+        run: |
+          curl --retry 10 --retry-delay 5 --fail http://localhost:5000 || (docker logs smart-tourism-app && exit 1)
+
+      - name: Stop stack
+        if: always()
+        run: docker compose -f docker-compose.yml down
