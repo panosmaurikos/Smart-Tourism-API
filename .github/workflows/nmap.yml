@@ -17,21 +17,16 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Install Docker Compose
-        uses: ndeloof/install-compose-action@v0.0.1  # Dedicated action to install docker-compose
+      - name: Run Docker Compose
+        uses: hoverkraft-tech/compose-action@v2.0.1
         with:
-          version: 'v2.29.2'  # Specify a stable version (check for latest at https://github.com/docker/compose/releases)
+          compose-file: "./docker-compose.yml"  # Path to your docker-compose.yml
+          up-flags: "--build"  # Forces rebuild of images
 
-      - name: Verify Docker Compose installation
+      - name: Verify services are running
         run: |
-          docker-compose --version
-          which docker-compose
-
-      - name: Start Docker Compose services
-        run: |
-          docker-compose up -d --build
-          docker-compose ps  # Show running containers for debugging
-          sleep 30  # Wait for services to start (adjust as needed)
+          docker ps  # Show running containers for debugging
+          sleep 30  # Wait for services to stabilize (adjust as needed)
 
       - name: Scan with Nmap
         uses: thereisnotime/action-nmap@v1
@@ -44,9 +39,3 @@ jobs:
         with:
           name: nmap-report
           path: report.*  # Uploads Nmap XML, normal, and grepable reports
-
-      - name: Stop Docker Compose services
-        if: always()  # Always run, even if previous steps fail
-        run: |
-          docker-compose down
-          docker-compose ps  # Verify containers are stopped
