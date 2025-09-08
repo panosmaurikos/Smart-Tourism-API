@@ -17,11 +17,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Install Docker Compose CLI plugin
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose-plugin
+
       - name: Run Docker Compose
-        uses: hoverkraft-tech/compose-action@v2.0.1
-        with:
-          compose-file: "./docker-compose.yml"  # Path to your docker-compose.yml
-          up-flags: "--build"  # Forces rebuild of images
+        run: docker compose -f ./docker-compose.yml up -d --build
 
       - name: Verify services are running
         run: |
